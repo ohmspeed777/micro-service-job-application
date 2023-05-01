@@ -23,7 +23,7 @@ func NewHandler(auth auth.IAuthService) ports.IAuthHandler {
 func (h *Handler) SignUp(c echo.Context) error {
 	req := auth.SignUpReq{}
 	if err := c.Bind(&req); err != nil {
-		return errorx.New(http.StatusBadRequest, "can not bind request", err)
+		return errorx.NewInvalidRequest(err)
 	}
 
 	res, err := h.auth.SignUp(corex.NewFromEchoContext(c), req)
@@ -38,7 +38,7 @@ func (h *Handler) SignUp(c echo.Context) error {
 func (h *Handler) SignIn(c echo.Context) error {
 	req := auth.SignInReq{}
 	if err := c.Bind(&req); err != nil {
-		return errorx.New(http.StatusBadRequest, "can not bind request", err)
+		return errorx.NewInvalidRequest(err)
 	}
 
 	res, err := h.auth.SignIn(corex.NewFromEchoContext(c), req)
@@ -46,5 +46,5 @@ func (h *Handler) SignIn(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusCreated, res)
+	return c.JSON(http.StatusOK, res)
 }

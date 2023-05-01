@@ -80,7 +80,7 @@ func (s *Service) SignIn(ctx context.Context, req SignInReq) (*SignInRes, error)
 	claims["jti"] = uuidToken
 	claims["iat"] = time.Now().Local().Unix()
 	claims["id"] = user.ID.Hex()
-	claims["role"] = "users"
+	claims["role"] = 1
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
 	accessToken, err := token.SignedString(key)
