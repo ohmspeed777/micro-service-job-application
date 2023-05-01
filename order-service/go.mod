@@ -4,8 +4,9 @@ go 1.19
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/jinzhu/copier v0.3.5
 	github.com/labstack/echo/v4 v4.10.2
-	github.com/ohmspeed777/go-pkg v1.4.4
+	github.com/ohmspeed777/go-pkg v1.4.5
 	github.com/spf13/viper v1.15.0
 	github.com/tylerb/graceful v1.2.15
 	go.mongodb.org/mongo-driver v1.11.4

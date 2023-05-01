@@ -14,6 +14,7 @@ import (
 
 type IUserService interface {
 	GetMe(ctx context.Context) (*domain.User, error)
+	GetOne(ctx context.Context, req domain.GetOneReq) (*domain.User, error)
 }
 
 type Service struct {
@@ -33,6 +34,15 @@ func (s *Service) GetMe(ctx context.Context) (*domain.User, error) {
 	}
 
 	user, err := s.user.FindOneByID(c.User.ID)
+	if err != nil {
+		return nil, errorx.New(http.StatusBadRequest, "can not find my profile", err)
+	}
+
+	return user, nil
+}
+
+func (s *Service) GetOne(ctx context.Context, req domain.GetOneReq) (*domain.User, error) {
+	user, err := s.user.FindOneByID(req.ID)
 	if err != nil {
 		return nil, errorx.New(http.StatusBadRequest, "can not find my profile", err)
 	}

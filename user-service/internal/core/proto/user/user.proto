@@ -1,0 +1,22 @@
+syntax = "proto3";
+package user;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./user";
+
+message GetUserReq {
+  string id = 1;
+}
+
+message GetUserRes {
+  string email = 1;
+  string first_name = 2;
+  string last_name = 3;
+  google.protobuf.Timestamp updated_at = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+service User {
+  rpc GetProfile (GetUserReq) returns (GetUserRes) {};  
+}

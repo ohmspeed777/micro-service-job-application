@@ -5,7 +5,6 @@ import (
 	"app/internal/core/ports"
 	"app/repository/product"
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/jinzhu/copier"
@@ -51,10 +50,6 @@ func (s *Service) Create(ctx context.Context, req CreateReq) (*domain.Product, e
 }
 
 func (s *Service) GetOne(ctx context.Context, req domain.GetOneReq) (*domain.Product, error) {
-	fmt.Println()
-	fmt.Println(req.ID)
-	fmt.Println()
-	
 	product, err := s.product.FindOneByID(req.ID)
 	if err != nil {
 		return nil, errorx.New(http.StatusBadRequest, "can not find a product", err)

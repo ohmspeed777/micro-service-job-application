@@ -1,14 +1,16 @@
 app:
-  port: 1324
+  port: 1326
   name: "authentication-service"
-  grpc: 50001
+
+grpc:
+  user: "localhost:50001"
 
 mongo:
   username: "root"
   password: "12345678"
   host: "localhost"
   port: 27017
-  database: "user"
+  database: "store"
   timeout: 10s
 
 jwt:
