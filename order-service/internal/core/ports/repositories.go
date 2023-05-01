@@ -15,4 +15,5 @@ type IOrderRepo interface{
 	Update(i interface{}) error
 	FindOneByID(id string) (*domain.Order, error) 
 	AggregateOneByID(id string) (*domain.OrderLookedUp, error)
+	AggregateAllByUser(userId string, q domain.Query) ([]*domain.OrderLookedUp, int64, error)
 }

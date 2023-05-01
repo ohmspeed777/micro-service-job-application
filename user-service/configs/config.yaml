@@ -3,6 +3,9 @@ app:
   name: "authentication-service"
   grpc: 50001
 
+grpc:
+  order: "localhost:50002"
+
 mongo:
   username: "root"
   password: "12345678"

@@ -21,6 +21,7 @@ type IOrderService interface {
 	Create(ctx context.Context, req CreateReq) (*domain.Order, error)
 	Cancel(ctx context.Context, req domain.GetOneReq) (*domain.CommonResponse, error)
 	GetOne(ctx context.Context, req domain.GetOneReq) (*domain.OrderLookedUp, error)
+	GetAll(ctx context.Context, req GetAllReq) (*domain.ResponseInfo, error)
 }
 
 type Service struct {
@@ -53,7 +54,9 @@ func (s *Service) Create(ctx context.Context, req CreateReq) (*domain.Order, err
 
 	entity.User = _id
 	entity.Status = domain.Created
-	// to do validate stock
+
+	// !to do validate stock
+	// !should calculate by own itself
 
 	err = s.order.Create(entity)
 	if err != nil {
@@ -113,4 +116,18 @@ func (s *Service) GetOne(ctx context.Context, req domain.GetOneReq) (*domain.Ord
 	u.UpdatedAt = res.GetUpdatedAt().AsTime()
 
 	return order.Format(u), nil
+}
+
+func (s *Service) GetAll(ctx context.Context, req GetAllReq) (*domain.ResponseInfo, error) {
+	orders, counter, err := s.order.AggregateAllByUser(req.User, req.Query)
+	if err != nil {
+		return nil, errorx.New(http.StatusBadRequest, "can not find orders", err)
+	}
+
+	// format
+	for _, v := range orders {
+		v.Format(nil)
+	}
+
+	return domain.NewPagination(orders, req.GetPage(), req.GetLimit(), counter), nil
 }

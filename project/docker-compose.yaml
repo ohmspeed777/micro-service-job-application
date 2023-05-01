@@ -1,0 +1,80 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - '5001:80'
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+  mongo-user:
+    image: 'mongo:4.2.16-bionic'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: "12345678"
+      MONGO_INITDB_DATABASE: user
+    volumes:
+      - ./db-data/user/:/data/db
+
+  mongo-store:
+    image: 'mongo:4.2.16-bionic'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: "12345678"
+      MONGO_INITDB_DATABASE: store
+    volumes:
+      - ./db-data/store/:/data/db
+
+  auth-service:
+    build: 
+      context: ./../auth-service
+    restart: always
+    env_file:
+      - ./common.env
+    environment:
+      - MONGO_HOST=mongo-user
+      - MONGO_DATABASE=user
+    depends_on:
+      - mongo-user
+      - mongo-store
+
+  user-service:
+    build: 
+      context: ./../user-service
+    restart: always
+    env_file:
+      - ./common.env
+    depends_on:
+      - mongo-user
+      - mongo-store
+    environment:
+      - MONGO_HOST=mongo-user
+      - MONGO_DATABASE=user
+  
+  order-service:
+    build: 
+      context: ./../order-service
+    restart: always
+    env_file:
+      - ./common.env
+    depends_on:
+      - mongo-user
+      - mongo-store
+    environment:
+      - MONGO_HOST=mongo-store
+      - MONGO_DATABASE=store
+
+  product-service:
+    build: 
+      context: ./../product-service
+    restart: always
+    env_file:
+      - ./common.env
+    depends_on:
+      - mongo-user
+      - mongo-store
+    environment:
+      - MONGO_HOST=mongo-store
+      - MONGO_DATABASE=store
+  

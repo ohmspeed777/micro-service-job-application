@@ -1,6 +1,7 @@
 app:
   port: 1326
   name: "authentication-service"
+  grpc: 50002
 
 grpc:
   user: "localhost:50001"

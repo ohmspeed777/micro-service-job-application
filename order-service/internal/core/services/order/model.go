@@ -6,8 +6,12 @@ import (
 
 type GetAllReq struct {
 	domain.Query
+	User string
 }
 
 type CreateReq struct {
-	Items  []*domain.OrderItem `json:"items"`
+	Items []*domain.OrderItem `json:"items"`
+
+	// mock up
+	Total float64 `json:"total"`
 }

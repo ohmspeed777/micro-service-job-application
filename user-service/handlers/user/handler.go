@@ -28,16 +28,12 @@ func (h *Handler) GetMe(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-// func (h *Handler) SignIn(c echo.Context) error {
-// 	req := auth.SignInReq{}
-// 	if err := c.Bind(&req); err != nil {
-// 		return errorx.NewInvalidRequest(err)
-// 	}
+func (h *Handler) GetMyOrderHistory(c echo.Context) error {
+	res, err := h.user.GetMyOrderHistory(corex.NewFromEchoContext(c))
+	if err != nil {
+		return err
+	}
 
-// 	res, err := h.auth.SignIn(corex.NewFromEchoContext(c), req)
-// 	if err != nil {
-// 		return err
-// 	}
+	return c.JSON(http.StatusOK, res)
+}
 
-// 	return c.JSON(http.StatusCreated, res)
-// }

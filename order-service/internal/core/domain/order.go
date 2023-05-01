@@ -14,6 +14,7 @@ type Order struct {
 	User   primitive.ObjectID `json:"user" bson:"user"`
 	Status OrderStatus        `json:"status" bson:"status"`
 	Items  []*OrderItem       `json:"items" bson:"items"`
+	Total  float64            `json:"total" bson:"total"`
 }
 
 type OrderItem struct {

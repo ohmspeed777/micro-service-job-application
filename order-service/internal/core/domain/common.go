@@ -114,3 +114,7 @@ func NewPagination(entities any, page, size, counter int64) *ResponseInfo {
 	res.PageInfo.AllOFEntities = counter
 	return res
 }
+
+type Counter struct {
+	Counter int64 `bson:"counter"`
+}

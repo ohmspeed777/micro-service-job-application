@@ -23,11 +23,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func init() {
-	initViper()
 	logx.Init("trace", true)
+	initViper()
 }
 
 func main() {
@@ -37,12 +38,13 @@ func main() {
 		e                   = initEcho(privKey)
 		jwtO                = jwtx.NewJWT(privKey)
 		grpcServer, grpcLis = newGRPC()
+		orderGRPC           = newOrderGrpcClient()
 	)
 
 	api := e.Group("/api/v1")
 
 	// service zone
-	uService := userService.NewService(mongoDB)
+	uService := userService.NewService(mongoDB, orderGRPC)
 
 	// handler zone
 	userHandler := user.NewHandler(uService)
@@ -53,8 +55,8 @@ func main() {
 	// endpoint zone
 	meGroup := api.Group("/me", jwtO.RequiredAuth)
 	meGroup.GET("", userHandler.GetMe)
+	meGroup.GET("/order/history", userHandler.GetMyOrderHistory)
 
-	
 	logx.GetLog().Infof("grpc server starting on port: %d", viper.GetInt("app.grpc"))
 	go grpcServer.Serve(grpcLis)
 
@@ -138,4 +140,13 @@ func newGRPC() (*grpc.Server, net.Listener) {
 	}
 
 	return grpc.NewServer(), lis
+}
+
+func newOrderGrpcClient() *grpc.ClientConn {
+	conn, err := grpc.Dial(viper.GetString("grpc.order"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		logx.GetLog().Fatalf("did not connect grpc server: %v", err)
+	}
+
+	return conn
 }

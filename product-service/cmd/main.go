@@ -23,8 +23,8 @@ import (
 )
 
 func init() {
-	initViper()
 	logx.Init("trace", true)
+	initViper()
 }
 
 func main() {

@@ -3,9 +3,11 @@ package main
 import (
 	"app/handlers/order"
 	orderService "app/internal/core/services/order"
+	ordergRPCHandler "app/grpc/order"
 	"context"
 	"crypto/rsa"
 	"fmt"
+	"net"
 	"strings"
 	"time"
 
@@ -25,8 +27,8 @@ import (
 )
 
 func init() {
-	initViper()
 	logx.Init("trace", true)
+	initViper()
 }
 
 func main() {
@@ -36,6 +38,7 @@ func main() {
 		e        = initEcho(privKey)
 		jwtO     = jwtx.NewJWT(privKey)
 		userGrpc = newUserGrpcClient()
+		grpcServer, grpcLis = newGRPC()
 	)
 
 	defer userGrpc.Close()
@@ -50,6 +53,11 @@ func main() {
 	ordersGroup.POST("", orderHandler.Create)
 	ordersGroup.POST("/:id/cancel", orderHandler.Cancel)
 	ordersGroup.GET("/:id", orderHandler.GetOne)
+
+	ordergRPCHandler.NewGrpcServer(orderService.NewService(mongoDB, userGrpc), grpcServer)
+
+	logx.GetLog().Infof("grpc server starting on port: %d", viper.GetInt("app.grpc"))
+	go grpcServer.Serve(grpcLis)
 
 	logx.GetLog().Infof("server starting on port: %d", viper.GetInt("app.port"))
 	_ = graceful.ListenAndServe(e.Server, 5*time.Second)
@@ -131,4 +139,13 @@ func newUserGrpcClient() *grpc.ClientConn {
 	}
 
 	return conn
+}
+
+func newGRPC() (*grpc.Server, net.Listener) {
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", viper.GetInt("app.grpc")))
+	if err != nil {
+		logx.GetLog().Fatalf("failed to listen: %v", err)
+	}
+
+	return grpc.NewServer(), lis
 }
